@@ -3,7 +3,7 @@ import java.util.Vector;
 public class Database_user_handler implements Data_base_handler
 {
 	Vector<User> u_array=new Vector<User>();
-	public Vector<Post> getposts_by_everything(String d)
+	public Vector<Post> getposts_by_everything(String cat, String loc)
 	{return null;}
 	
 	public int get_size()
@@ -50,7 +50,7 @@ public class Database_user_handler implements Data_base_handler
 	}
 	public boolean Update_user(User user, String ID) {
 		for(int i =0 ; i < u_array.size();i++) {
-			if(u_array.get(i).getUserID().equals(ID)) {
+			if(u_array.get(i).getUserID().equals(ID) && Authenticate(user)) {
 				u_array.get(i).setPassword(user.getPassword());
 				u_array.get(i).setPhone_number(user.getPhone_number());
 				return true;
@@ -60,7 +60,7 @@ public class Database_user_handler implements Data_base_handler
 	}
 	public Vector<Post> getposts_by_user(String Userid)
 	{return null;}
-	public boolean update_post(Post post) {return false;}
+	public boolean update_post(Post post, String ID) {return false;}
 
 
 }
