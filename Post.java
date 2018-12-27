@@ -15,7 +15,8 @@ public class Post
 	}
 	
 	Post(String UserID, String category, String description, String item_location, String color) {
-		PostID = "" + postcount++;
+		if(UserID != null)
+			PostID = "" + postcount++;
 		this.UserID = UserID;
 		this.category = category;
 		this.description = description;
