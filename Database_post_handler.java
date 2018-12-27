@@ -26,26 +26,14 @@ public class Database_post_handler implements Data_base_handler
 		for(int i =0 ; i < p_array.size();i++)  if(p_array.get(i).getUserID().equals(Userid)) p.add(p_array.get(i)) ;
 		return p;
 	}
-	public Vector<Post> getposts_by_everything(String d) 
+	public Vector<Post> getposts_by_everything(String cat, String loc)
 	{
 		Vector<Post> p = new Vector<Post>();
 		for(int i =0 ; i < p_array.size();i++)
 		{
-			if(p_array.get(i).getCategory().contains(d))
-				{
+			if(p_array.get(i).getCategory().contains(cat) && p_array.get(i).getItem_location().contains(loc))
+			{
 				p.add(p_array.get(i)) ;	
-				}
-			else if(p_array.get(i).getColor().contains(d))
-			{
-				p.add(p_array.get(i));
-			}
-			else if(p_array.get(i).getItem_location().contains(d))
-			{
-				p.add(p_array.get(i));
-			}
-			else if(p_array.get(i).getDescription().contains(d))
-			{
-				p.add(p_array.get(i));
 			}
 		}  
 		return p;
@@ -61,7 +49,7 @@ public class Database_post_handler implements Data_base_handler
 	}
 	public boolean Delete(String ID) {
 		for(int i =0 ; i< p_array.size();i++) {
-			if(p_array.get(i).getUserID().equals(ID)) {
+			if(p_array.get(i).getPostID().equals(ID)) {
 				p_array.remove(i);
 				return true;
 			}
@@ -71,10 +59,11 @@ public class Database_post_handler implements Data_base_handler
 	public boolean Update_user(User user, String ID) {
 		return false;
 	}
-	public boolean update_post(Post post) {
+	public boolean update_post(Post post, String ID) {
 		for(int i =0 ; i< p_array.size();i++) {
-			if(p_array.get(i).getPostID().equals(post.getPostID())) {
+			if(p_array.get(i).getPostID().equals(post.getPostID()) && Authenticate(post)) {
 				p_array.get(i).setCategory(post.getCategory());
+				p_array.get(i).setColor(post.getColor());
 				p_array.get(i).setDescription(post.getDescription());
 				p_array.get(i).setItem_location(post.getItem_location());
 		        return true;
