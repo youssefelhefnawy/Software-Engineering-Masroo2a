@@ -4,6 +4,11 @@ import java.util.Vector;
 public class Main {
 
 	private static User currentuser = null;
+	public static String createspace(String s, int space) {
+		if(s.length() > space)
+			return s;
+		return s + String.format("%0" + (space - s.length()) + "d", 0).replace('0', ' ');
+	}
 	public static void main(String[] args) {
 		GUI gui = new GUI();
 		Scanner input = new Scanner(System.in);
@@ -62,12 +67,12 @@ public class Main {
 				if(choice == 1) {
 					System.out.print("Category: ");
 					String category = input.nextLine();
-					System.out.println("Description: ");
-					String description = input.nextLine();
-					System.out.println("Location: ");
-					String item_location = input.nextLine();
-					System.out.println("Color: ");
+					System.out.print("Color: ");
 					String color = input.nextLine();
+					System.out.print("Location: ");
+					String item_location = input.nextLine();
+					System.out.print("Description: ");
+					String description = input.nextLine();
 					if(gui.create_post(currentuser.getUserID(), category, description, item_location, color)) {
 						System.out.println("Item successfully posted!");
 					}
@@ -75,27 +80,81 @@ public class Main {
 						System.out.println("Failed to post item!\nThere is a similar item already in the database!");
 				}
 				////My posts
-				else if (choice==2)
-				{
-					System.out.println("My Posts :");
-					Vector<Post> ourposts=gui.my_posts(currentuser.getUserID());					
-					System.out.println("Item ID         " +"Item Color         "+   "Item Location         "+"Item description");
-					
-					for(int i=0 ;i <ourposts.size();i++)
-					{
-						System.out.println(ourposts.elementAt(i).getPostID()+"         " + ourposts.elementAt(i).getColor()+"         " + ourposts.elementAt(i).getItem_location()+"         "+ourposts.elementAt(i).getDescription());
-					}					
+				else if (choice==2) {
+					Vector<Post> ourposts = gui.my_posts(currentuser.getUserID());
+					if (ourposts.size() == 0) {
+						System.out.println("You don't have any posts!");
+						continue;
+					}
+					System.out.println("Item ID         " + "Item Category         " + "Item Color         " + "Item Location         " + "Item description");
+					for (int i = 0; i < ourposts.size(); i++) {
+						System.out.println(createspace(ourposts.elementAt(i).getPostID(), 16) + createspace(ourposts.elementAt(i).getCategory(), 22) + createspace(ourposts.elementAt(i).getColor(), 19) + createspace(ourposts.elementAt(i).getItem_location(), 22) + ourposts.elementAt(i).getDescription());
+					}
+					System.out.println("Do you want to edit any of your posts?(y/n)");
+					String update = input.nextLine();
+					if (update.equals("y")) {
+						System.out.print("Enter the ID of the post you want to edit: ");
+						String itemID = input.nextLine();
+						if (gui.dbp.getpost(itemID) == null) {
+							System.out.println("Invalid input!");
+						} else {
+							System.out.print("Category: ");
+							String category = input.nextLine();
+							System.out.print("Color: ");
+							String color = input.nextLine();
+							System.out.print("Location: ");
+							String item_location = input.nextLine();
+							System.out.print("Description: ");
+							String description = input.nextLine();
+							if (gui.dbp.update_post(new Post(null, category, description, item_location, color), itemID)) {
+								System.out.println("Post successfully updated!");
+							} else
+								System.out.println("Failed to update post!\nThere is a similar item already in the database!");
+						}
+					}
+					System.out.println("Do you want to delete any of your posts?(y/n)");
+					String delete = input.nextLine();
+					if (delete.equals("y")) {
+						System.out.print("Enter the ID of the post you want to delete: ");
+						String itemID = input.nextLine();
+						if (gui.dbp.getpost(itemID) == null) {
+							System.out.println("Invalid input!");
+						} else {
+							gui.dbp.Delete(itemID);
+							System.out.println("Post successfully deleted!");
+						}
+					}
 				}
 				////Search on Posts
 				else if(choice==3)
 				{
-					System.out.println("Enter keyword(s):");
-					String keywords=input.nextLine();
-					Vector<Post> ourposts=gui.Search(keywords);
-					System.out.println("Item ID         " +"Item Color         "+   "Item Location         "+"Item description");
+					System.out.println("Item category:");
+					String category=input.nextLine();
+					System.out.println("Location of losing the item:");
+					String location = input.nextLine();
+					Vector<Post> ourposts=gui.Search(category, location);
+					if(ourposts.size() == 0){
+						System.out.println("No results found...");
+						continue;
+					}
+					System.out.println("Item ID         " + "Item Category         "+"Item Color         "+   "Item Location         "+"Item description");
 					for(int i=0 ;i <ourposts.size();i++)
 					{
-						System.out.println(ourposts.elementAt(i).getPostID()+"         " + ourposts.elementAt(i).getColor()+"         " + ourposts.elementAt(i).getItem_location()+"         "+ourposts.elementAt(i).getDescription());
+						System.out.println(createspace(ourposts.elementAt(i).getPostID(), 16) + createspace(ourposts.elementAt(i).getCategory(), 22) +createspace(ourposts.elementAt(i).getColor(), 19)+ createspace(ourposts.elementAt(i).getItem_location(), 22) + ourposts.elementAt(i).getDescription());
+					}
+					System.out.println("Do you want to claim any of the items?(y/n)");
+					String claim = input.nextLine();
+					if(claim.equals("y")) {
+						System.out.println("Enter the ID of the item you want to claim:");
+						String itemID = input.nextLine();
+						if(gui.dbp.getpost(itemID) == null) {
+							System.out.println("Invalid input!");
+						}
+						else if(gui.dbp.getpost(itemID).getUserID() == currentuser.getUserID()) {
+							System.out.println("You can't claim an item you posted yourself!");
+						}
+						else
+							System.out.println("Contact this number to claim your item: " + gui.dbu.Getuser(gui.dbp.getpost(itemID).getUserID()).getPhone_number());
 					}
 				}
 				else if(choice == 4) {
