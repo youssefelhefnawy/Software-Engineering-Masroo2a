@@ -19,8 +19,8 @@ public class GUI
 	{
 		return dbu.Insert_user(new User(name, pass, num));
 	}
-	public Vector<Post> Search(String keywords)
+	public Vector<Post> Search(String cat, String loc)
 	{	
-		return dbp.getposts_by_everything(keywords);
+		return dbp.getposts_by_everything(cat, loc);
 	}
 }
